@@ -1,12 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Timesheet Editor</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/test_int_timesheet/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timesheet Editor</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; }
+    th { background: #f0f0f0; }
+    input { width: 100%; }
+  </style>
+</head>
+<body>
+  <h1>教師時數互動表</h1>
+  <label>使用者名稱：</label>
+  <input id="username" placeholder="輸入你的名稱" />
+  <table>
+    <thead>
+      <tr>
+        <th>教師</th><th>日期</th><th>時段</th><th>時數</th><th>最後編輯者</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <script>
+    const data = [
+      { teacher: "Tr亮", date: "2025-07-07", time: "9:30~11:45", hours: 2.25, editedBy: "" },
+      { teacher: "Tr羽", date: "2025-07-07", time: "9:30~11:45", hours: 2.25, editedBy: "" },
+      { teacher: "TrCY", date: "2025-07-07", time: "14:00~15:00", hours: 1.0, editedBy: "" },
+    ];
+    const usernameInput = document.getElementById("username");
+    const tbody = document.getElementById("table-body");
+
+    function render() {
+      tbody.innerHTML = "";
+      data.forEach((row, i) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = ["teacher", "date", "time", "hours"].map(field => {
+          return \`<td><input value="\${row[field]}" oninput="update(\${i}, '\${field}', this.value)" title="最後編輯：\${row.editedBy || '無'}"></td>\`;
+        }).join("") + \`<td>\${row.editedBy}</td>\`;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function update(i, field, value) {
+      data[i][field] = value;
+      data[i].editedBy = usernameInput.value || "匿名";
+      render();
+    }
+
+    render();
+  </script>
+</body>
 </html>
